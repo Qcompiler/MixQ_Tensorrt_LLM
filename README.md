@@ -2,7 +2,7 @@
 
 Please clone the project
 ```
-git clone https://github.com/ucascnic/lianxiangTRT.git
+git clone https://github.com/Qcompiler/MixQ_Tensorrt_LLM.git
 ```
 
 Please Pull the docker 
@@ -14,13 +14,20 @@ docker pull registry.cn-hangzhou.aliyuncs.com/dongdongchen/dongdong:v1
 Please run the docker
 
 ```
- srun  -N 1 --pty --gres=gpu:a100:4 -A h100 -p a100  docker run --rm -it   --ipc=host -p 6789:22 -v /home/chenyidong/lianxiang/lianxiangTRT:/code/tensorrt_llm  \
-            -v /home/chenyidong/checkpoint:/code/checkpoint  \
-            -v /home/chenyidong/dataset:/code/dataset  \
-             --ulimit memlock=-1 --ulimit    stack=67108864             \
-            --gpus=all       \
-            --env "CCACHE_DIR=/code/tensorrt_llm/cpp/.ccache"            \
-            --env "CCACHE_BASEDIR=/code/tensorrt_llm"                
+bash -c " nvidia-smi; docker run --rm -it --ipc=host -p 6789:22 \
+-v /home/chenyidong/lianxiang/lianxiangTRT/:/code/tensorrt_llm   \
+-v  /mnt/octave/data/chenyidong/checkpoint:/dataset    \
+-v /home/chenyidong/checkpoint:/code/checkpoint \
+-v /mnt/octave/data/chenyidong/lianxiang/checkpoint:/octave/checkpoint \
+               --ulimit memlock=-1 --ulimit    stack=67108864             \
+                           --gpus=all       \
+                       --env 'CCACHE_DIR=/code/tensorrt_llm/cpp/.ccache'            \
+                            --env 'CCACHE_BASEDIR=/code/tensorrt_llm'              \
+                                                    --workdir /app/tensorrt_llm     \
+                                                            --hostname hpc-release \
+                  --name tensorrt_llm-release-zhanghy                             \
+                                                           --tmpfs /tmp:exec      \
+              registry.cn-hangzhou.aliyuncs.com/dongdongchen/dongdong:v1     "
 
 ```
 
@@ -40,21 +47,14 @@ bash fp16.sh
 Please run optimized model  Llama-2-7B by
 
 ```
-bash com.sh
+bash mix.sh
 
 ```
 
-
-Please run optimized model  with Llama-2-70B by
-
-```
-bash commpi.sh
-
-```
 
 ## benchmark
 
-The pytoch benchmark is shown in compare.ipynb
+The pytoch benchmark is shown in https://github.com/Qcompiler/MIXQ
 
 Please run the flowing script to reproduce the benchmark of AWQ MIXQ bitsandbytes FP16
 
