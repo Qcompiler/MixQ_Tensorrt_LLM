@@ -1,0 +1,16 @@
+
+build
+build/
+./build
+output
+checkpoint
+./outputs/*
+./checkpoint/*
+
+
+dataset
+outputs
+#act_scales
+#EETQ
+#AutoAWQ
+*.csv

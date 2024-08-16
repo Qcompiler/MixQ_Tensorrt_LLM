@@ -1,0 +1,17 @@
+__pycache__
+examples/tests/
+python/EETQ.egg-info/
+build/
+.vscode
+*.o
+*.nsys-rep
+*.ncu-rep
+*.qdstrm
+*.qdrep
+*.sqlite
+*.pyc
+*.log
+*.so
+*.ckpt
+*.pt
+dist/
