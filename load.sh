@@ -4,6 +4,7 @@
 # pip install zstandard
 # rm -r /usr/local/lib/python3.10/dist-packages/tensorrt_llm
 cp .tmux.conf ~/.
+pip install triton==2.3.0
 #apt-get update
 export PYTHONPATH=$PYTHONPATH:/code/tensorrt_llm/
 export FT_LOG_LEVEL=ERROR

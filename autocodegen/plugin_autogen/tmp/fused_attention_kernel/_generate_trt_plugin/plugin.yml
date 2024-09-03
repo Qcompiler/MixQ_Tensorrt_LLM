@@ -1,0 +1,109 @@
+arguments:
+  Out:
+    arg_type: OUTPUT
+    dtype: tensor[fp16]
+    hints:
+    - '16'
+    - '16'
+    is_input: false
+    name: Out
+    offset: 0
+  L:
+    arg_type: OUTPUT
+    dtype: tensor[fp32]
+    hints:
+    - '16'
+    - '16'
+    is_input: false
+    name: L
+    offset: 1
+  M:
+    arg_type: OUTPUT
+    dtype: tensor[fp32]
+    hints:
+    - '16'
+    - '16'
+    is_input: false
+    name: M
+    offset: 2
+  Q:
+    arg_type: INPUT
+    dtype: tensor[fp16]
+    hints:
+    - '16'
+    - '16'
+    is_input: true
+    name: Q
+    offset: 0
+  K:
+    arg_type: INPUT
+    dtype: tensor[fp16]
+    hints:
+    - '16'
+    - '16'
+    is_input: true
+    name: K
+    offset: 1
+  V:
+    arg_type: INPUT
+    dtype: tensor[fp16]
+    hints:
+    - '16'
+    - '16'
+    is_input: true
+    name: V
+    offset: 2
+  sm_scale:
+    arg_type: PARAM
+    dtype: fp32
+    hints:
+    - ''
+    - ''
+    is_input: false
+    name: sm_scale
+    offset: 0
+  batch_size:
+    arg_type: DIM_SIZE
+    dtype: i32
+    hints:
+    - ''
+    - ''
+    is_input: false
+    name: batch_size
+    offset: 0
+  num_heads:
+    arg_type: PARAM
+    dtype: i32
+    hints:
+    - ''
+    - ''
+    is_input: false
+    name: num_heads
+    offset: 0
+  seq_len:
+    arg_type: DIM_SIZE
+    dtype: i32
+    hints:
+    - ''
+    - '16'
+    is_input: false
+    name: seq_len
+    offset: 0
+  constexpr_0:
+    value: 128
+  constexpr_1:
+    value: 64
+  constexpr_2:
+    value: 128
+grid_dims:
+- (seq_len + 127) / 128
+- batch_size * num_heads
+- '1'
+name: fused_attention_kernel
+shape_deduce:
+- Q[*] -> Out[*]
+- Q[m,n,k,*] -> L[m,n,k]
+- Q[m,n,k,*] -> M[m,n,k]
+- 'Q[m,n,k,*] : m -> batch_size'
+- 'Q[m,n,k,*] : k -> seq_len'
+version: 0
