@@ -15,9 +15,9 @@ for model in "${models[@]}"
     output_dir=/octave/checkpoint/checkpoint${type}/tllm_checkpoint_1gpu_fp16${model}
     engine_dir=/octave/checkpoint/trt_engines${type}/tllm_checkpoint_1gpu_fp16${model}
 
-#     CUDA_VISIBLE_DEVICES=$1   \
-#     python  quantize_qwen.py --model_dir  ${model_dir}\
-#     --output_dir ${output_dir}   --dtype float16 --load_model_on_cpu  
+    CUDA_VISIBLE_DEVICES=$1   \
+    python  quantize_qwen.py --model_dir  ${model_dir}\
+    --output_dir ${output_dir}   --dtype float16 --load_model_on_cpu  
 
 #     CUDA_VISIBLE_DEVICES=$1 trtllm-build --checkpoint_dir ${output_dir} \
 #             --output_dir  ${engine_dir} \
