@@ -26,7 +26,7 @@ export PYTHONPATH=$PYTHONPATH:/code/tensorrt_llm/EETQ/build/lib.linux-x86_64-cpy
 
 cd ..
 
-#mkdir build
+mkdir build
 cd build
 cmake ..
 make

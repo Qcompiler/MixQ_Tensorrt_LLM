@@ -35,6 +35,24 @@ if PYTHON_BINDINGS:
     from tensorrt_llm.runtime import ModelRunnerCpp
 
 
+TRT_LLM_PLUGIN_NAMESPACE = 'tensorrt_llm'
+
+import ctypes
+def _load_triton_plugin_lib():
+    triton_plugin_dir = Path(__file__).parent.absolute()
+    plugin_lib = triton_plugin_dir / 'build/libtrt_llm_custom_plugins.so'
+    handle = ctypes.CDLL(plugin_lib, mode=ctypes.RTLD_GLOBAL)
+    if handle is None:
+        raise ImportError('TensorRT-LLM Triton Plugin is unavailable')
+    handle.initOpenAiTritonPlugins.argtypes = [ctypes.c_void_p, ctypes.c_char_p]
+    handle.initOpenAiTritonPlugins.restype = ctypes.c_bool
+    assert handle.initOpenAiTritonPlugins(
+        None, TRT_LLM_PLUGIN_NAMESPACE.encode('utf-8'))
+    
+_load_triton_plugin_lib()
+
+
+
 def parse_arguments(args=None):
     # see `add_common_args` for extended list of arguments
     parser = argparse.ArgumentParser()
