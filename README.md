@@ -1,4 +1,5 @@
-# Project For lenovo
+# Mixed-Precision Inference with Text Generation Demo by TensorRT-LLM 
+
 
 Please clone the project
 ```
@@ -56,20 +57,3 @@ bash mix.sh
 
 The pytoch benchmark is shown in https://github.com/Qcompiler/MIXQ
 
-Please run the flowing script to reproduce the benchmark of AWQ MIXQ bitsandbytes FP16
-
-``` cd MixQ/src ```
-
-
-Run:
-
-``` bash runthroughput.sh 0 ```
-
-For Llama-2-70B model:
-
-<img src="figure/throughput-llama70b_revised_baseline.jpg"  align = "center"  width="600" />
-
-
-For Llama-2-7B model:
-
-<img src="figure/throughput-llama7b.jpg"  align = "center"  width="600" />
