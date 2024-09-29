@@ -1,5 +1,8 @@
 # Mixed-Precision Inference with Text Generation Demo by TensorRT-LLM 
 
+The project implemented the mixed-precsion inferece in TensorRT-LLM.
+
+We write the tensorrt plugging in [TsinghuaMixQPlugin.cpp](https://github.com/Qcompiler/MixQ_Tensorrt_LLM/blob/main/TsinghuaMixQPlugin.cpp)
 
 Please clone the project
 ```
@@ -32,28 +35,69 @@ bash -c " nvidia-smi; docker run --rm -it --ipc=host -p 6789:22 \
 
 ```
 
-Please setup the env  by
+Please setup the enviroment  by
 
+```
 cd /code/tensorrt_llm
 source load.sh
-
-Please run FP16 baseline with Llama-2-7B by
-
-```
-bash fp16.sh
-
 ```
 
+## Examples of Qwen2 with Mixed-Precision Inference
 
-Please run optimized model  Llama-2-7B by
+We have provided a script `mix.sh` for you. And please quantize and run the model step by step;
+
+Quantize the model by:
 
 ```
-bash mix.sh
+export models=qwen2-7b-instruct
+export ngpu=1
+export type=mix
+export model_dir=/dataset/${model}
+export quant_dir=/octave/checkpoint/checkpoint${type}/tllm_checkpoint_${ngpu}gpu_fp16${model}
+export out_dir=/octave/checkpoint/checkpoint${type}/tllm_checkpoint_${ngpu}gpu_fp16${model}
 
+ 
+CUDA_VISIBLE_DEVICES=$1  python  quantize_qwen.py --model_dir  ${model_dir} --output_dir  ${quant_dir}  --dtype float16             --load_model_on_cpu   --mix int8_mix   
 ```
 
+Build the TensorRT-LLM Engine with mixed-precision plugging by
 
-## benchmark
+```
+CUDA_VISIBLE_DEVICES=$1 trtllm-build --checkpoint_dir ${quant_dir} \
+    --output_dir ${out_dir} --max_input_len  2048 \
+        --gemm_plugin float16 
+```
 
-The pytoch benchmark is shown in https://github.com/Qcompiler/MIXQ
+Run the TensorRT-LLM Engine with mixed-precision inference by
+
+```
+CUDA_VISIBLE_DEVICES=$1   python  summarize.py --test_trt_llm \
+                    --hf_model_dir ${model_dir} \
+                    --data_type fp16 \
+                    --engine_dir ${out_dir}
+    
+```
+
+The output is
+
+<img src="figure/mixed.jpg"  align = "center"  width="600" />
+
+
+
+## Benchmark
+
+We have tested the throughput with Pytorch:
+
+For Llama-2-70B model:
+
+<img src="figure/throughput-llama70b_revised_baseline.jpg"  align = "center"  width="600" />
+
+
+For Llama-2-7B model:
+
+<img src="figure/throughput-llama7b.jpg"  align = "center"  width="600" />
+
+
+For a detailed benchmark, please refer to the pytoch benchmark in :
+https://github.com/Qcompiler/MIXQ
 
