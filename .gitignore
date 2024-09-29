@@ -14,3 +14,4 @@ outputs
 #EETQ
 #AutoAWQ
 *.csv
+.__pycache__
