@@ -13,6 +13,7 @@ cp -r /usr/local/lib/python3.10/dist-packages/tensorrt_llm/libs /code/tensorrt_l
 cp -r /usr/local/lib/python3.10/dist-packages/tensorrt_llm/bindings.cpython-310-x86_64-linux-gnu.so /code/tensorrt_llm/tensorrt_llm/.
 # pip install modelutils -i https://pypi.tuna.tsinghua.edu.cn/simple
 # pip install peft -i https://pypi.tuna.tsinghua.edu.cn/simple
+
 cd quantkernel
 python setup.py install
 cd ..
