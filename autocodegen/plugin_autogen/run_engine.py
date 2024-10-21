@@ -18,7 +18,7 @@ from tensorrt_llm.runtime.session import Session, TensorInfo
 # from tensorrt_llm.plugin import get_engine_name
 
 
-sys.path.append('./tmp')
+sys.path.append('/tmp')
 from functional import fused_attention_kernel # isort:skip
 # yapf: enable
 
@@ -26,6 +26,25 @@ from functional import fused_attention_kernel # isort:skip
 def get_engine_name(head_size, dtype):
     return f'fmha_{head_size}_{dtype}.engine'
 
+import mirage as mi
+def test_mirage_attension(Q, K ,V, batch_size, num_head, seq_length, head_size):
+    graph = mi.new_kernel_graph()
+    Q = graph.new_input (dims=( num_head * batch_size , seq_length, head_size), dtype=mi.float16)
+    K = graph.new_input (dims=( num_head * batch_size , seq_length, head_size), dtype=mi.float16)
+    V = graph.new_input (dims=( num_head * batch_size, seq_length, head_size), dtype=mi.float16)
+    graph = mi.new_kernel_graph ()
+    A = graph.matmul (Q, K)
+    S = graph.softmax (A)
+    O = graph.matmul (S, V)
+    optimized_graph = graph.superoptimize ()
+    input_tensors = [
+        Q,
+        K,
+        V
+    ]
+    # Launch the Mirage-generated kernel to perform attention
+    output = optimized_graph (input_tensors)
+    return output 
 
 def run(engine_dir,
         batch_size,
@@ -107,6 +126,14 @@ def run(engine_dir,
         m = torch.empty(shape, device=q.device, dtype=torch.float32)
         o = torch.empty_like(q)
 
+        stream.synchronize()
+        for _ in range(n_repeats):
+            profiler.start('mirage_attention')
+            ok = test_mirage_attension(q,k,v, batch_size, num_heads, seq_len, head_size)
+            stream.synchronize()
+            profiler.stop('mirage_attention')
+            assert ok
+
         # Triton warm-up
         fused_attention(q, k, v, sm_scale, l_buf=L, m_buf=m, o_buf=o)
         stream.synchronize()
@@ -130,6 +157,8 @@ def run(engine_dir,
             stream.synchronize()
             profiler.stop('TRT Plugin')
             assert ok
+
+
         profiler.summary()
 
 
